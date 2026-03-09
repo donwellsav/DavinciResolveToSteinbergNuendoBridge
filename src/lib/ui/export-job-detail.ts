@@ -1,4 +1,5 @@
 import { DeliveryHandoffOutput } from '../services/delivery-handoff.js';
+import { ExternalExecutionPackage } from '../types/external-execution-package.js';
 
 export interface ExportJobDetailViewModel {
   stagedArtifacts: string[];
@@ -11,9 +12,20 @@ export interface ExportJobDetailViewModel {
   }>;
   blockedArtifacts: string[];
   handoffSummary: DeliveryHandoffOutput['summary'];
+  externalPackage?: {
+    status: ExternalExecutionPackage['manifest']['status'];
+    reason: string;
+    generatedEntries: ExternalExecutionPackage['index']['generated'];
+    deferredEntries: ExternalExecutionPackage['index']['deferred'];
+    checksums: ExternalExecutionPackage['checksums'];
+    blockedDependencies: string[];
+  };
 }
 
-export function buildExportJobDetailViewModel(handoff: DeliveryHandoffOutput): ExportJobDetailViewModel {
+export function buildExportJobDetailViewModel(
+  handoff: DeliveryHandoffOutput,
+  externalPackage?: ExternalExecutionPackage
+): ExportJobDetailViewModel {
   return {
     stagedArtifacts: handoff.manifest.stagedArtifacts,
     deferredWriterInputs: handoff.writerInputs.map((item) => ({
@@ -26,6 +38,16 @@ export function buildExportJobDetailViewModel(handoff: DeliveryHandoffOutput): E
       reason: item.reason
     })),
     blockedArtifacts: handoff.writerInputs.filter((item) => item.readinessStatus === 'blocked').map((item) => item.id),
-    handoffSummary: handoff.summary
+    handoffSummary: handoff.summary,
+    externalPackage: externalPackage
+      ? {
+          status: externalPackage.manifest.status,
+          reason: externalPackage.manifest.reason,
+          generatedEntries: externalPackage.index.generated,
+          deferredEntries: externalPackage.index.deferred,
+          checksums: externalPackage.checksums,
+          blockedDependencies: externalPackage.summary.blockedDependencies
+        }
+      : undefined
   };
 }

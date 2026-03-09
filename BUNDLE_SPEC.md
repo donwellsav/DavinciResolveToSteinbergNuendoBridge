@@ -1,21 +1,26 @@
 # BUNDLE SPEC
 
-## Delivery handoff additions (Phase 3C)
+## External execution package additions (Phase 3D)
 
-New deterministic handoff files (logical paths):
-- `handoff/deferred-writer-inputs.json`
-- `handoff/delivery-handoff-manifest.json`
-- `handoff/delivery-handoff-summary.json`
+New deterministic package files (logical paths):
+- `package/external-execution-manifest.json`
+- `package/external-execution-index.json`
+- `package/external-execution-summary.json`
+- `package/checksums.json`
+- `package/deferred-writer-inputs.json`
+- `package/generated-artifact-index.json`
 
-### Contract version
-- `DeferredWriterInputVersion`: `3c.v1`
+### Package version
+- `ExternalExecutionPackageVersion`: `3d.v1`
 
-### Writer readiness statuses
-- `ready-for-writer`
-- `blocked`
+### Package statuses
+- `ready`
 - `partial`
-- `deferred-with-known-gaps`
+- `blocked`
 
 ### Notes
-- These files define writer inputs and readiness only.
-- They do not contain Nuendo/session binary payloads.
+- Staged artifact layout is preserved.
+- Handoff outputs are preserved.
+- Package files add export-level indexing, provenance summary, and deterministic checksums.
+- Deferred binary targets are represented as contract-only entries.
+- No Nuendo/session binaries are generated in this phase.
