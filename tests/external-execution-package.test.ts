@@ -93,6 +93,8 @@ describe('buildExternalExecutionPackage', () => {
     expect(pkg.summary.sourceSignature).toBe('pkg-sig');
     expect(pkg.summary.reviewSignature).toBe('review-sig');
     expect(pkg.index.deferred[0].classification).toBe('deferred');
+    expect(pkg.layout.packageRoot).toBe('package/');
+    expect(pkg.manifest.reasons.length).toBeGreaterThan(0);
   });
 
   it('reports blocked status when staged payload content is missing', () => {
@@ -110,6 +112,7 @@ describe('buildExternalExecutionPackage', () => {
 
     expect(pkg.manifest.status).toBe('blocked');
     expect(pkg.summary.blockedDependencies.some((reason) => reason.includes('Missing generated payload content'))).toBe(true);
+    expect(pkg.manifest.reasons.some((reason) => reason.includes('Missing generated payload content'))).toBe(true);
   });
 
   it('keeps export detail view-model stable while exposing package fields', () => {
