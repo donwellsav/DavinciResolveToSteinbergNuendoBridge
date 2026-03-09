@@ -1,21 +1,25 @@
 # DavinciResolveToSteinbergNuendoBridge
 
-## Phase 3C status: deferred-writer contract hardening
+## Phase 3D status: external-execution package boundary
 
-This repository now includes a **formal handoff-contract layer** for deferred binary artifacts.
+This repository now includes a deterministic **external-execution package layer** on top of staged outputs and handoff contracts.
 
 What this phase adds:
-- Deterministic deferred writer-input contracts (`DeferredWriterInput`, versioned as `3c.v1`).
-- Deterministic handoff manifests and summaries under:
-  - `handoff/deferred-writer-inputs.json`
-  - `handoff/delivery-handoff-manifest.json`
-  - `handoff/delivery-handoff-summary.json`
-- Readiness validation for deferred artifacts:
-  - `ready-for-writer`
-  - `blocked`
+- Deterministic external package model (`ExternalExecutionPackage`, versioned as `3d.v1`).
+- Deterministic package files under `package/`:
+  - `external-execution-manifest.json`
+  - `external-execution-index.json`
+  - `external-execution-summary.json`
+  - `checksums.json`
+  - `deferred-writer-inputs.json`
+  - `generated-artifact-index.json`
+- Explicit generated vs deferred classification for package members.
+- Deterministic checksums for generated staged + handoff artifacts.
+- External readiness evaluation:
+  - `ready`
   - `partial`
-  - `deferred-with-known-gaps`
-- A stable UI view-model adapter for export/job detail inspection.
+  - `blocked`
+- Optional Node-only materialization helper for writing package files to disk without writer execution.
 
 What remains out of scope:
 - Native Nuendo project/session writing.
@@ -27,3 +31,4 @@ Architectural boundaries remain intact:
 - `delivery-execution.ts` is payload-generation-only.
 - `delivery-staging.ts` is staging-only.
 - `delivery-handoff.ts` is contract/handoff-only.
+- `external-execution-package.ts` is external package export-only.
