@@ -41,6 +41,7 @@ export interface ExternalExecutionManifest {
   version: ExternalExecutionPackageVersion;
   status: ExternalExecutionStatus;
   reason: string;
+  reasons: string[];
   sourceSignature: DeliverySourceSignature;
   reviewSignature: DeliveryReviewSignature;
   generatedCount: number;
@@ -56,6 +57,11 @@ export interface ExternalExecutionIndex {
 
 export interface ExternalExecutionPackage {
   rootLabel: string;
+  layout: {
+    stagedRoot: 'staged/';
+    handoffRoot: 'handoff/';
+    packageRoot: 'package/';
+  };
   manifest: ExternalExecutionManifest;
   index: ExternalExecutionIndex;
   deferredInputs: ExternalExecutionDeferredInput[];

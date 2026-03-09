@@ -28,7 +28,7 @@ function sha256(content: string): ExternalExecutionChecksum {
   };
 }
 
-function classifyStatus(input: ExternalExecutionPackageInput): { status: ExternalExecutionStatus; reason: string; blockers: string[] } {
+function classifyStatus(input: ExternalExecutionPackageInput): { status: ExternalExecutionStatus; reason: string; reasons: string[]; blockers: string[] } {
   const blockers = new Set<string>();
 
   if (input.handoff.summary.blockedCount > 0) {
@@ -48,7 +48,8 @@ function classifyStatus(input: ExternalExecutionPackageInput): { status: Externa
   }
 
   if (blockers.size > 0) {
-    return { status: 'blocked', reason: Array.from(blockers).sort()[0], blockers: Array.from(blockers).sort() };
+    const reasons = Array.from(blockers).sort();
+    return { status: 'blocked', reason: reasons[0], reasons, blockers: reasons };
   }
 
   const hasPartial =
@@ -58,11 +59,17 @@ function classifyStatus(input: ExternalExecutionPackageInput): { status: Externa
     return {
       status: 'partial',
       reason: 'Generated artifacts are packaged, while deferred writer artifacts remain contract-only for external execution.',
+      reasons: ['Generated artifacts are packaged, while deferred writer artifacts remain contract-only for external execution.'],
       blockers: []
     };
   }
 
-  return { status: 'ready', reason: 'All package members are generated and available for external execution.', blockers: [] };
+  return {
+    status: 'ready',
+    reason: 'All package members are generated and available for external execution.',
+    reasons: ['All package members are generated and available for external execution.'],
+    blockers: []
+  };
 }
 
 export function buildExternalExecutionPackage(input: ExternalExecutionPackageInput): ExternalExecutionPackage {
@@ -135,6 +142,7 @@ export function buildExternalExecutionPackage(input: ExternalExecutionPackageInp
     version: '3d.v1',
     status: readiness.status,
     reason: readiness.reason,
+    reasons: readiness.reasons,
     sourceSignature: input.handoff.manifest.sourceSignature,
     reviewSignature: input.handoff.manifest.reviewSignature,
     generatedCount: generatedEntries.length,
@@ -156,7 +164,8 @@ export function buildExternalExecutionPackage(input: ExternalExecutionPackageInp
       reviewSignature: input.handoff.manifest.reviewSignature,
       status: manifest.status,
       reason: manifest.reason,
-      blockedDependencies: readiness.blockers
+      blockedDependencies: readiness.blockers,
+      reasons: manifest.reasons
     }),
     'package/checksums.json': stableStringify(checksums),
     'package/deferred-writer-inputs.json': stableStringify(deferredInputs),
@@ -165,6 +174,11 @@ export function buildExternalExecutionPackage(input: ExternalExecutionPackageInp
 
   return {
     rootLabel: input.rootLabel,
+    layout: {
+      stagedRoot: 'staged/',
+      handoffRoot: 'handoff/',
+      packageRoot: 'package/'
+    },
     manifest,
     index,
     deferredInputs,
